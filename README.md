@@ -25,15 +25,16 @@ for the lifespan of the project.
 
 ### Important notes
 
+- The code was written using Python 3.7, please install this version or you may run into issues installing the required dependencies. 
+For example, at the time of writing Python 3.9 doesn't have any wheels for numpy, so this would fail.
 - Currently both Microsoft's [CameraTraps](https://github.com/microsoft/CameraTraps) and 
-[ai4eutils](https://github.com/microsoft/ai4eutils) are added to Grunz as a git submodule.
+[ai4eutils](https://github.com/microsoft/ai4eutils) are added to Grunz as git submodules.
 This allows the user to track these repos as and when they are updated. Instructions to do so follow.
 - **Please note** the MegaDetector model exceeds GitHub's file size limit of 100.00 MB.
 For this reason please download it into your local repo before running. See [setup instructions below](#download-the-megadetector-model-file)
 - It may be that you run into a `ModuleNotFoundError` within the cameratraps repo. Should this happen you will need to append the base directory to the offending import path.
     - e.g `from ct_utils import truncate_float` becomes `from cameratraps.ct_utils import truncate_float
 `       - If this issue persists I will open up a PR in the parent repo.
-
 
 ### Features
 
@@ -56,43 +57,57 @@ Running "Grunz" should thus be very simple.
 
 #### Clone the repo
 
-- `git clone https://github.com/dddjjjbbb/Grunz`
+`git clone https://github.com/dddjjjbbb/Grunz`
 
-#### Pull from the sub modules
+#### Fetch the latest changes from upstream in each submodule
 
-If it's the first time you're checking out the repo you will need to run the following command:
-
-`git submodule update --init --recursive`
-
-Therafter:
-
-`git submodule update --recursive`
+`git submodule update --rebase --remote`
 
 #### VM
 
 - Create a virtual environment to avoid overwriting global dependencies.
-    - `python3 -m venv Grunz`
-
+    - `python -m venv Grunz`
+    
+    - If this fails for some reason you can achieve the same result by following the steps below in PyCharm:
+        - File -> Settings
+        - Project: Grunz -> Python Interpreter
+        - Click the settings cog icon -> Show All...
+        - Click the + icon
+            - Note: The VM name will default to the project name
+            - Ensure the base interpreter is set as Python 3.7
+        - Tap OK
+        - Close and reopen the project
+    - Once this has been completed you should see a `(venv)` prefix in your terminal prompt.
+    This is the indication you are operating within your virtual environment
+    
 #### Download the MegaDetector model file
 
 - The easiest way to do this is via `wget`
-    - `wget https://lilablobssc.blob.core.windows.net/models/camera_traps/megadetector/md_v4.1.0/md_v4.1.0.pb`
 
+    - `wget https://lilablobssc.blob.core.windows.net/models/camera_traps/megadetector/md_v4.1.0/md_v4.1.0.pb`
+    
+Note: If you do not have wget installed simply open the url above in your browser and save the file.
+
+**IMPORTANT**: Ensure you save this file to the root directory of the project. i.e it should be at the same level as `main.py`
+       
 #### Dependencies
 
 - Install dependencies to your VM. 
+    
     - `pip install -r requirements.txt`
 
 #### For pre pro.
 
 `python main.py --pre "grunz/data"`
 
+**IMPORTANT**: Please note, if running on a windows machine, the path delimiter will differ. 
+i.e use backslashes in place of the forward slashes used in the documentation.
+
 - The directory in this case is the path to the root directory containing the AVIs.
 
 #### For post pro. 
 
-` python main.py --post "grunz/output/20201016-0040.json"
-`
+` python main.py --post "grunz/output/20201016-0040.json"`
 
 - The path in this case is the path to the resultant JSON after detection has taken place.
 - Please note the JSON is time stamped to avoid overwriting and to act as a reference post runtime.
