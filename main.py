@@ -42,7 +42,7 @@ def pre_pro(root_video_directory: str) -> None:
         for avi_file_path in avi_file_paths
     ]
 
-    model = "md_v4.1.0.pb"
+    model = "".join([str(f) for f in Path(".").rglob("*.pb")])
     jpeg_file_paths = file_utils.find_files_recursively("jpeg")
     output_json = file_utils.create_json_output_file()
     results = load_and_run_detector_batch(model_file=model,
