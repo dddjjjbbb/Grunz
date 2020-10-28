@@ -115,4 +115,4 @@ i.e use backslashes in place of the forward slashes used in the documentation.
 License
 ----
 
-GNU GPL would be my preference but I am open to discussing this.
+GNU GPL v2
