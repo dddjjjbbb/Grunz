@@ -39,7 +39,7 @@ def pre_pro(root_video_directory: str) -> None:
     avi_file_paths = file_utils.find_files_recursively("AVI")
 
     [
-        Splitter(str(avi_file_path)).export_frames_to_jpeg(OneMinuteVideo.FOUR_IMAGES.value)
+        Splitter(str(avi_file_path)).export_frames_to_jpeg(OneMinuteVideo.FIVE_IMAGES.value)
         for avi_file_path in avi_file_paths
     ]
 
