@@ -34,7 +34,34 @@ This allows the user to track these repos as and when they are updated. Instruct
 For this reason please download it into your local repo before running. See [setup instructions below](#download-the-megadetector-model-file)
 - It may be that you run into a `ModuleNotFoundError` within the cameratraps repo. Should this happen you will need to append the base directory to the offending import path.
     - e.g `from ct_utils import truncate_float` becomes `from cameratraps.ct_utils import truncate_float
-`       - If this issue persists I will open up a PR in the parent repo.
+`       - Note: I cannot currently open a PR for this. Please do the following.
+
+---
+
+- path: `cameratraps/detection/run_tf_detector.py`
+- lines 55 and 56 should be...
+
+```
+from cameratraps.ct_utils import truncate_float
+import cameratraps.visualization.visualization_utils as viz_utils
+```
+
+- path: `cameratraps/detection/run_tf_detector_batch.py`
+- lines 49 and 50 should be...
+
+```
+from cameratraps.detection.run_tf_detector import ImagePathUtils, TFDetector
+import cameratraps.visualization.visualization_utils as viz_utils
+```
+
+- path: `cameratraps/visualization/visualization_utils.py`
+- lines 17 should be...
+
+```
+from cameratraps.data_management.annotations import annotation_constants
+```
+
+---
 
 ### Features
 
