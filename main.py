@@ -17,7 +17,7 @@ from pathlib import Path
 
 
 class OneMinuteVideo(Enum):
-    """Enum used to avoid magic number. This is a slightly less obtuse."""
+    """Enum used to avoid magic number. This is slightly less obtuse."""
 
     FOUR_IMAGES = 0.3
     FIVE_IMAGES = 0.4
