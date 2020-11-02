@@ -1,7 +1,6 @@
 """This is the main entry point for managing the pre and post processing
 MegaDetector pipeline."""
 
-import os
 import argparse
 
 from enum import Enum
