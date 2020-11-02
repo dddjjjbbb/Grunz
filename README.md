@@ -14,8 +14,8 @@ There are two problems it seeks to solve:
 
 ### Why is it called Grunz?
 
-As the initial research goal related to the impact of 🐖's on soil degradation in 
-[Brandenburg, Germany](https://en.wikipedia.org/wiki/Brandenburg) and as German pigs "grunz" and not "oink", this seemed like a fitting name :)
+As the initial research goal related to the impact of 🐖's on ecosystems in 
+Berlin, Germany and as German pigs "grunz" and not "oink", this seemed like a fitting name :)
 
 ### Tech
 
