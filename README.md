@@ -33,8 +33,8 @@ This allows the user to track these repos as and when they are updated. Instruct
 - **Please note** the MegaDetector model exceeds GitHub's file size limit of 100.00 MB.
 For this reason please download it into your local repo before running. See [setup instructions below](#download-the-megadetector-model-file)
 - It may be that you run into a `ModuleNotFoundError` within the cameratraps repo. Should this happen you will need to append the base directory to the offending import path.
-    - e.g `from ct_utils import truncate_float` becomes `from cameratraps.ct_utils import truncate_float
-`       - Note: There is an open issue for this [here](https://github.com/dddjjjbbb/Grunz/issues/1). Until that is solved pleased do the following:
+    - e.g `from ct_utils import truncate_float` becomes `from cameratraps.ct_utils import truncate_float`
+        - Note: There is an open issue for this [here](https://github.com/dddjjjbbb/Grunz/issues/1). Until that is solved pleased do the following:
 
 ---
 
