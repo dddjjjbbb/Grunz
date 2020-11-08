@@ -34,7 +34,7 @@ This allows the user to track these repos as and when they are updated. Instruct
 For this reason please download it into your local repo before running. See [setup instructions below](#download-the-megadetector-model-file)
 - It may be that you run into a `ModuleNotFoundError` within the cameratraps repo. Should this happen you will need to append the base directory to the offending import path.
     - e.g `from ct_utils import truncate_float` becomes `from cameratraps.ct_utils import truncate_float
-`       - Note: I cannot currently open a PR for this. Please do the following.
+`       - Note: There is an open issue for this [here](https://github.com/dddjjjbbb/Grunz/issues/1). Until that is solved pleased do the following:
 
 ---
 
@@ -82,14 +82,6 @@ In the interest of getting the job done without fuss,
 I've tried to hide as much complexity as possible.
 Running "Grunz" should thus be very simple.
 
-#### Clone the repo
-
-`git clone https://github.com/dddjjjbbb/Grunz`
-
-#### Fetch the latest changes from upstream in each submodule
-
-`git submodule update --rebase --remote`
-
 #### VM
 
 - Create a virtual environment to avoid overwriting global dependencies.
@@ -106,6 +98,16 @@ Running "Grunz" should thus be very simple.
         - Close and reopen the project
     - Once this has been completed you should see a `(venv)` prefix in your terminal prompt.
     This is the indication you are operating within your virtual environment
+
+#### Clone the repo
+
+`git clone --recursive https://github.com/dddjjjbbb/Grunz`
+
+#### Fetch the latest changes from upstream in each submodule
+
+- cd into the `/ai4utils` & `/cameratraps` directories respectively and run the following command.
+
+`git checkout master; git pull`
     
 #### Download the MegaDetector model file
 
