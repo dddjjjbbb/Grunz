@@ -2,19 +2,14 @@
 MegaDetector pipeline."""
 
 import argparse
-
 from enum import Enum
-
-from grunz.file_utils.file_utils import FileUtils
-from grunz.splitter.splitter import Splitter
-from grunz.json_parser.json_parser import JSONParser
+from pathlib import Path
 
 from cameratraps.detection.run_tf_detector_batch import (
-    load_and_run_detector_batch,
-    write_results_to_file,
-)
-
-from pathlib import Path
+    load_and_run_detector_batch, write_results_to_file)
+from grunz.file_utils.file_utils import FileUtils
+from grunz.json_parser.json_parser import JSONParser
+from grunz.splitter.splitter import Splitter
 
 
 class OneMinuteVideo(Enum):
