@@ -53,7 +53,7 @@ def pre_pro(root_video_directory: str) -> None:
         model_file=model,
         image_file_names=jpeg_file_paths,
         checkpoint_path=output_json,
-        checkpoint_frequency=500,
+        checkpoint_frequency=500,  # If processing fails for < 500 images, an intermediate JSON will not be created.
         confidence_threshold=0.850,
     )
     return write_results_to_file(results, output_json)
