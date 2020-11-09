@@ -1,8 +1,5 @@
 """This module handles local file management during pre and post processing."""
 
-# TODO: Handle copying entirety of path as apposed to parent only.
-# Start at 1.Periode/SD1/n
-
 import time
 from pathlib import Path
 from shutil import copyfile
