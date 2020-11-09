@@ -122,6 +122,9 @@ Note: If you do not have wget installed simply open the url above in your browse
 #### Dependencies
 
 - Install dependencies to your VM. 
+
+Before running the command below, please note the following: If you intend to run Grunz on a machine with a GPU (which will likely be necessary at some point), 
+change `tensorflow` to `tensorflow-gpu` in the requirements.txt file before installing the dependencies.
     
     - `pip install -r requirements.txt`
 
