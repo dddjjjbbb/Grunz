@@ -2,7 +2,7 @@
 
 import time
 from pathlib import Path
-from shutil import copyfile
+from shutil import copy2
 from typing import List
 
 
@@ -53,7 +53,7 @@ class FileUtils:
         :param destination_path: Path to destination dir, including filename.
         :return: None.
         """
-        return copyfile(source_path, destination_path)
+        return copy2(source_path, destination_path)
 
     @staticmethod
     def create_json_output_file() -> str:
