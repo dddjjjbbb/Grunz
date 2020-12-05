@@ -34,12 +34,13 @@ def pre_pro(root_video_directory: str) -> None:
     file_utils = FileUtils(root_video_directory)
     avi_file_paths = file_utils.find_files_recursively("AVI")
 
-    [
-        Splitter(str(avi_file_path)).export_frames_to_jpeg(
-            OneMinuteVideo.FIVE_IMAGES.value
-        )
-        for avi_file_path in avi_file_paths
-    ]
+    for avi_file_path in avi_file_paths:
+        try:
+            Splitter(str(avi_file_path)).export_frames_to_jpeg(
+                OneMinuteVideo.FIVE_IMAGES.value)
+        except IOError as e:
+            print(f"{avi_file_path} could not be read. See: {e}")
+            continue
 
     model = "".join([str(f) for f in Path(".").rglob("*.pb")])
     jpeg_file_paths = file_utils.find_files_recursively("jpeg")
