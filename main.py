@@ -7,6 +7,7 @@ from pathlib import Path
 
 from cameratraps.detection.run_tf_detector_batch import (
     load_and_run_detector_batch, write_results_to_file)
+
 from grunz.file_utils.file_utils import FileUtils
 from grunz.json_parser.json_parser import JSONParser
 from grunz.splitter.splitter import Splitter
@@ -37,7 +38,8 @@ def pre_pro(root_video_directory: str) -> None:
     for avi_file_path in avi_file_paths:
         try:
             Splitter(str(avi_file_path)).export_frames_to_jpeg(
-                OneMinuteVideo.FIVE_IMAGES.value)
+                OneMinuteVideo.FIVE_IMAGES.value
+            )
         except IOError as e:
             print(f"{avi_file_path} could not be read. See: {e}")
             continue
