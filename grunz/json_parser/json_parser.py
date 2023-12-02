@@ -40,10 +40,6 @@ class JSONParser:
     @staticmethod
     def is_confidence_rating_minimum_or_above(confidence_rating: int) -> bool:
         """
-        TODO: Requires a test.
-        We need to test the case where multiple values exist.
-        Perhaps the first is lower but the second is higher.
-        In this case we'd be excluding the result.
         :param confidence_rating: 85% is the default.
         :return: A bool representing if the confidence value of a detection is >= percentage.
         """

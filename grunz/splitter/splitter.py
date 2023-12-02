@@ -15,7 +15,7 @@ class Splitter:
         self.file_path = file_path
         self.file_utils = FileUtils(self.file_path)
 
-    def export_frames_to_jpeg(self, fps_value: int) -> None:
+    def export_frames_to_jpeg(self, fps_value: float) -> None:
         """
         :param fps_value: Number of frames per second to consider when writing the
           clip. 0.4 loosely corresponds to 5 images per 1 minute clip.

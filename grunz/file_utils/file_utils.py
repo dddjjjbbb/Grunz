@@ -1,4 +1,4 @@
-"""This module handles local file management during pre and post processing."""
+"""This module handles local file management during pre and post-processing."""
 
 import time
 from pathlib import Path
@@ -9,7 +9,7 @@ from typing import List
 class FileUtils:
     """This class is responsible for finding, renaming and sorting file inputs and outputs."""
 
-    def __init__(self, directory):
+    def __init__(self, directory: Path):
 
         self.directory = directory
 
@@ -29,13 +29,13 @@ class FileUtils:
     def convert_path_name(file_path: str) -> str:
         """
         This value is used to preserve the original file path of a component JPEG.
-        This way we can easily trace a positive detection to it's correspondent video.
-        :return: compliant path. i.e replace '/' with '-'.
+        This way we can easily trace a positive detection to its correspondent video.
+        :return: compliant path. i.e. replace '/' with '-'.
         """
         return "-".join(Path(file_path).parts[1:])
 
     @staticmethod
-    def create_directory(*file_paths: str) -> List:
+    def create_directory(*file_paths: Path) -> List:
         """
         Method to be used to create `detections` directory.
         :param file_paths: file path or path(s).

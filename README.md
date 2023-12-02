@@ -1,6 +1,6 @@
 # Grunz
 
-"Grunz" aims to streamline the pre/post processing of camera trap data 
+"Grunz" aims to streamline the pre/post-processing of camera trap data 
 via [MegaDetector](https://github.com/Microsoft/CameraTraps#megadetector).
 The code was written to aid the work of 
 the [Institut für Ökologie at the Technische Universität Berlin](https://www.oekologie.tu-berlin.de/menue/home/parameter/en/). 
@@ -25,9 +25,9 @@ for the lifespan of the project.
 
 ### Important notes
 
-- The code was written using Python 3.7, please install this version or you may run into issues installing the required dependencies. 
+- The code was written using Python 3.7, please install this version, or you may run into issues installing the required dependencies. 
 For example, at the time of writing Python 3.9 doesn't have any wheels for numpy, so this would fail.
-- Currently both Microsoft's [CameraTraps](https://github.com/microsoft/CameraTraps) and 
+- Currently, both Microsoft's [CameraTraps](https://github.com/microsoft/CameraTraps) and 
 [ai4eutils](https://github.com/microsoft/ai4eutils) are added to Grunz as git submodules.
 This allows the user to track these repos as and when they are updated. Instructions to do so follow.
 - **Please note** the MegaDetector model exceeds GitHub's file size limit of 100.00 MB.
@@ -117,7 +117,7 @@ Running "Grunz" should thus be very simple.
     
 Note: If you do not have wget installed simply open the url above in your browser and save the file.
 
-**IMPORTANT**: Ensure you save this file to the root directory of the project. i.e it should be at the same level as `main.py`
+**IMPORTANT**: Ensure you save this file to the root directory of the project. i.e. it should be at the same level as `main.py`
        
 #### Dependencies
 
@@ -132,8 +132,8 @@ change `tensorflow` to `tensorflow-gpu` in the requirements.txt file before inst
 
 `python main.py --pre "grunz/data"`
 
-**IMPORTANT**: Please note, if running on a windows machine, the path delimiter will differ. 
-i.e use backslashes in place of the forward slashes used in the documentation.
+**IMPORTANT**: Please note, if running on a Windows machine, the path delimiter will differ. 
+i.e. use backslashes in place of the forward slashes used in the documentation.
 
 - The directory in this case is the path to the root directory containing the AVIs.
 

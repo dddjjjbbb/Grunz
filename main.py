@@ -1,11 +1,11 @@
-"""This is the main entry point for managing the pre and post processing
+"""This is the main entry point for managing the pre and post-processing
 MegaDetector pipeline."""
 
 import argparse
 from enum import Enum
 from pathlib import Path
 
-from cameratraps.detection.run_tf_detector_batch import (
+from cameratraps.archive.detection.run_detector_batch import (
     load_and_run_detector_batch, write_results_to_file)
 
 from grunz.file_utils.file_utils import FileUtils
@@ -14,8 +14,6 @@ from grunz.splitter.splitter import Splitter
 
 
 class OneMinuteVideo(Enum):
-    """Enum used to avoid magic number. This is slightly less obtuse."""
-
     FOUR_IMAGES = 0.3
     FIVE_IMAGES = 0.4
 
@@ -32,7 +30,7 @@ def pre_pro(root_video_directory: str) -> None:
     :param root_video_directory: Top level directory containing video files.
     :return: None.
     """
-    file_utils = FileUtils(root_video_directory)
+    file_utils = FileUtils(Path(root_video_directory))
     avi_file_paths = file_utils.find_files_recursively("AVI")
 
     for avi_file_path in avi_file_paths:
@@ -86,7 +84,7 @@ def post_pro(mega_detector_json) -> None:
             Path(f"{positive_detection_path}/{original_path_to_file}")
         )
         file_utils.copy_file(
-            f, Path(f"{positive_detection_path}/{original_path_to_file}/{file_name}")
+            f, f"{positive_detection_path}/{original_path_to_file}/{file_name}"
         )
 
 
@@ -108,7 +106,7 @@ def main():
         action="store",
     )
 
-    args = parser.parse_args()
+    parser.parse_args()
 
 
 if __name__ == "__main__":
