@@ -7,6 +7,7 @@ matplotlib~=3.10
 pandas~=3.0
 requests~=2.32
 tqdm~=4.67
+lightning~=2.6
 
 # Dev
 pytest~=9.0
