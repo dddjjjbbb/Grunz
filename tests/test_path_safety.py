@@ -13,10 +13,10 @@ class TestConvertJpegPathToAvi:
     def test_non_matching_filename_raises_value_error(self):
         """A JPEG path that doesn't contain a PICT*.AVI pattern should raise ValueError."""
         with pytest.raises(ValueError, match="Cannot extract AVI filename"):
-            JSONParser.get_list_for_sort(["some/path/random_image.jpeg"])
+            JSONParser.convert_jpeg_paths_to_avi_paths(["some/path/random_image.jpeg"])
 
     def test_matching_filename_still_works(self):
-        result = JSONParser.get_list_for_sort(["some/path/PICT0001.AVI-001.jpeg"])
+        result = JSONParser.convert_jpeg_paths_to_avi_paths(["some/path/PICT0001.AVI-001.jpeg"])
         assert len(result) == 1
         assert "PICT0001.AVI" in str(result[0])
 
