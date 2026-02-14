@@ -13,7 +13,6 @@ from grunz.splitter.splitter import Splitter
 
 
 class OneMinuteVideo(Enum):
-    FOUR_IMAGES = 0.3
     FIVE_IMAGES = 0.4
 
 

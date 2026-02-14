@@ -65,12 +65,12 @@ class JSONParser:
             detections = image["detections"]
 
             if detections:
-                max_detection_conf = image["max_detection_conf"]
-                category = image["detections"][0]["category"]
-
-                if JSONParser.is_confidence_rating_minimum_or_above(
-                    max_detection_conf
-                ) and JSONParser.is_category_of_type_animal(category):
+                has_animal = any(
+                    JSONParser.is_category_of_type_animal(d["category"])
+                    and JSONParser.is_confidence_rating_minimum_or_above(d["conf"])
+                    for d in detections
+                )
+                if has_animal:
                     animals.append(image)
         return animals
 
