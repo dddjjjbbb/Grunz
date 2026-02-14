@@ -2,12 +2,11 @@
 MegaDetector pipeline."""
 
 import argparse
+import json
 from enum import Enum
 from pathlib import Path
 
-from cameratraps.archive.detection.run_detector_batch import (
-    load_and_run_detector_batch, write_results_to_file)
-
+from grunz.detector import convert_result, create_detector
 from grunz.file_utils.file_utils import FileUtils
 from grunz.json_parser.json_parser import JSONParser
 from grunz.splitter.splitter import Splitter
@@ -42,17 +41,19 @@ def pre_pro(root_video_directory: str) -> None:
             print(f"{avi_file_path} could not be read. See: {e}")
             continue
 
-    model = "".join([str(f) for f in Path(".").rglob("*.pb")])
+    detector = create_detector()
     jpeg_file_paths = file_utils.find_files_recursively("jpeg")
     output_json = file_utils.create_json_output_file()
-    results = load_and_run_detector_batch(
-        model_file=model,
-        image_file_names=jpeg_file_paths,
-        checkpoint_path=output_json,
-        checkpoint_frequency=500,  # If processing fails for < 500 images, an intermediate JSON will not be created.
-        confidence_threshold=0.850,
-    )
-    return write_results_to_file(results, output_json)
+
+    results = []
+    for image_path in jpeg_file_paths:
+        pw_result = detector.single_image_detection(image_path)
+        results.append(convert_result(pw_result))
+
+    with open(output_json, "w") as output_file:
+        json.dump({"images": results}, output_file)
+
+    return output_json
 
 
 def post_pro(mega_detector_json) -> None:

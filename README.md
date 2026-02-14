@@ -25,43 +25,8 @@ for the lifespan of the project.
 
 ### Important notes
 
-- The code was written using Python 3.7, please install this version, or you may run into issues installing the required dependencies. 
-For example, at the time of writing Python 3.9 doesn't have any wheels for numpy, so this would fail.
-- Currently, both Microsoft's [CameraTraps](https://github.com/microsoft/CameraTraps) and 
-[ai4eutils](https://github.com/microsoft/ai4eutils) are added to Grunz as git submodules.
-This allows the user to track these repos as and when they are updated. Instructions to do so follow.
-- **Please note** the MegaDetector model exceeds GitHub's file size limit of 100.00 MB.
-For this reason please download it into your local repo before running. See [setup instructions below](#download-the-megadetector-model-file)
-- It may be that you run into a `ModuleNotFoundError` within the cameratraps repo. Should this happen you will need to append the base directory to the offending import path.
-    - e.g `from ct_utils import truncate_float` becomes `from cameratraps.ct_utils import truncate_float`
-        - Note: There is an open issue for this [here](https://github.com/dddjjjbbb/Grunz/issues/1). Until that is solved pleased do the following:
-
----
-
-- path: `cameratraps/detection/run_tf_detector.py`
-- lines 55 and 56 should be...
-
-```
-from cameratraps.ct_utils import truncate_float
-import cameratraps.visualization.visualization_utils as viz_utils
-```
-
-- path: `cameratraps/detection/run_tf_detector_batch.py`
-- lines 49 and 50 should be...
-
-```
-from cameratraps.detection.run_tf_detector import ImagePathUtils, TFDetector
-import cameratraps.visualization.visualization_utils as viz_utils
-```
-
-- path: `cameratraps/visualization/visualization_utils.py`
-- lines 17 should be...
-
-```
-from cameratraps.data_management.annotations import annotation_constants
-```
-
----
+- Requires Python 3.10 or later (tested on 3.12).
+- MegaDetector model weights are downloaded automatically by PytorchWildlife on first run.
 
 ### Features
 
@@ -93,7 +58,7 @@ Running "Grunz" should thus be very simple.
         - Click the settings cog icon -> Show All...
         - Click the + icon
             - Note: The VM name will default to the project name
-            - Ensure the base interpreter is set as Python 3.7
+            - Ensure the base interpreter is set as Python 3.10+
         - Tap OK
         - Close and reopen the project
     - Once this has been completed you should see a `(venv)` prefix in your terminal prompt.
@@ -101,32 +66,23 @@ Running "Grunz" should thus be very simple.
 
 #### Clone the repo
 
-`git clone --recursive https://github.com/dddjjjbbb/Grunz`
+`git clone https://github.com/dddjjjbbb/Grunz`
 
-#### Fetch the latest changes from upstream in each submodule
+#### MegaDetector model
 
-- cd into the `/ai4utils` & `/cameratraps` directories respectively and run the following command.
+Model weights are now managed by [PytorchWildlife](https://github.com/microsoft/CameraTraps) and are
+downloaded automatically on first run. No manual download step is required.
 
-`git checkout master; git pull`
-    
-#### Download the MegaDetector model file
-
-- The easiest way to do this is via `wget`
-
-    - `wget https://lilablobssc.blob.core.windows.net/models/camera_traps/megadetector/md_v4.1.0/md_v4.1.0.pb`
-    
-Note: If you do not have wget installed simply open the url above in your browser and save the file.
-
-**IMPORTANT**: Ensure you save this file to the root directory of the project. i.e. it should be at the same level as `main.py`
+See the [CameraTraps installation guide](https://microsoft.github.io/CameraTraps/installation/)
+for details on the underlying library.
        
 #### Dependencies
 
-- Install dependencies to your VM. 
+- Install dependencies to your VM.
 
-Before running the command below, please note the following: If you intend to run Grunz on a machine with a GPU (which will likely be necessary at some point), 
-change `tensorflow` to `tensorflow-gpu` in the requirements.txt file before installing the dependencies.
-    
 `pip install -r requirements.txt`
+
+Note: PytorchWildlife will automatically use GPU if CUDA is available. No manual configuration needed.
 
 #### For pre pro.
 
