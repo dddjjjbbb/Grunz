@@ -1,26 +1,19 @@
-"""Tests for Phase 1 code review fixes.
-
-Each test targets a specific finding from the code review.
-Tests are written to FAIL against the current code, then the fix makes them pass.
-"""
+"""Structural and correctness tests for code quality invariants."""
 
 import ast
 import inspect
 import json
-import sys
-import textwrap
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
+
+from grunz.json_parser.json_parser import JSONParser
+from grunz.file_utils.file_utils import FileUtils
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
-# --- C1: argparse type= misuse ---
-
-
-class TestArgparseFixC1:
+class TestArgparseContract:
     """main() should parse args as strings, not execute functions via type=."""
 
     def test_pre_is_not_used_as_type_callable(self):
@@ -32,7 +25,6 @@ class TestArgparseFixC1:
                 if node.func.attr == "add_argument":
                     for keyword in node.keywords:
                         if keyword.arg == "type":
-                            # type= should be a builtin like str, not pre_pro/post_pro
                             if isinstance(keyword.value, ast.Name):
                                 assert keyword.value.id not in (
                                     "pre_pro",
@@ -44,15 +36,10 @@ class TestArgparseFixC1:
         assert "type=post_pro" not in source, "post_pro should not be an argparse type="
 
 
-# --- C2: filter_json_for_detection_results mutation bug ---
-
-
-class TestFilterMutationBugC2:
-    """Calling filter_json_for_detection_results twice must not accumulate results."""
+class TestFilterDetectionResults:
+    """filter_json_for_detection_results must not accumulate state across calls."""
 
     def test_second_call_does_not_include_first_call_results(self, tmp_path):
-        from grunz.json_parser.json_parser import JSONParser
-
         images_a = [
             {
                 "file": "a.jpeg",
@@ -77,21 +64,28 @@ class TestFilterMutationBugC2:
         result_a = parser.filter_json_for_detection_results()
         assert len(result_a) == 1
 
-        # Re-point parser to second file and call again
         parser.path_to_json = str(path_b)
         result_b = parser.filter_json_for_detection_results()
 
-        # This MUST be 1, not 2. The old code appends to self.animals across calls.
         assert len(result_b) == 1, (
             f"Expected 1 result from second call, got {len(result_b)}. "
             "filter_json_for_detection_results is accumulating state across calls."
         )
 
+    def test_no_pass_statement_in_filter(self):
+        source = (PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py").read_text()
+        tree = ast.parse(source)
 
-# --- C3: pre_pro return type annotation ---
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name == "filter_json_for_detection_results":
+                for child in ast.walk(node):
+                    if isinstance(child, ast.Pass):
+                        pytest.fail(
+                            "filter_json_for_detection_results contains a dead 'pass' branch"
+                        )
 
 
-class TestPreProReturnTypeC3:
+class TestPreProAnnotation:
     """pre_pro should be annotated as returning str, not None."""
 
     def test_pre_pro_annotation_is_str(self):
@@ -101,7 +95,6 @@ class TestPreProReturnTypeC3:
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef) and node.name == "pre_pro":
                 assert node.returns is not None, "pre_pro has no return annotation"
-                # Should be 'str', not 'None'
                 if isinstance(node.returns, ast.Constant):
                     assert node.returns.value is not None, (
                         "pre_pro return annotation is None"
@@ -113,35 +106,20 @@ class TestPreProReturnTypeC3:
                 break
 
 
-# --- M2: confidence_rating type hint ---
+class TestTypeAnnotations:
+    """Type annotations must match actual runtime types."""
 
-
-class TestConfidenceTypeHintM2:
-    """is_confidence_rating_minimum_or_above should accept float, not int."""
-
-    def test_parameter_type_is_float(self):
-        from grunz.json_parser.json_parser import JSONParser
-
+    def test_confidence_rating_parameter_is_float(self):
         sig = inspect.signature(JSONParser.is_confidence_rating_minimum_or_above)
         param = sig.parameters["confidence_rating"]
         assert param.annotation is float, (
             f"confidence_rating annotation is {param.annotation}, expected float"
         )
 
-
-# --- M3: find_files_recursively return type ---
-
-
-class TestFindFilesReturnTypeM3:
-    """find_files_recursively should have a proper return type annotation."""
-
-    def test_return_annotation_is_list_of_str(self):
-        from grunz.file_utils.file_utils import FileUtils
-
+    def test_find_files_recursively_returns_list_of_str(self):
         sig = inspect.signature(FileUtils.find_files_recursively)
         ret = sig.return_annotation
 
-        # Accept list[str] or List[str]
         origin = getattr(ret, "__origin__", None)
         assert origin is list, (
             f"Return annotation origin is {origin}, expected list. "
@@ -149,33 +127,10 @@ class TestFindFilesReturnTypeM3:
         )
 
 
-# --- L2: Remove if not detections: pass ---
-
-
-class TestRemovePassL2:
-    """filter_json_for_detection_results should not contain 'if not detections: pass'."""
-
-    def test_no_pass_statement_in_filter(self):
-        source = (PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py").read_text()
-        tree = ast.parse(source)
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "filter_json_for_detection_results":
-                for child in ast.walk(node):
-                    if isinstance(child, ast.Pass):
-                        pytest.fail(
-                            "filter_json_for_detection_results still contains a 'pass' statement"
-                        )
-
-
-# --- M1: Simplify boolean returns ---
-
-
-class TestSimplifyBooleansM1:
-    """Boolean predicate methods should return expressions directly, not if/return True/return False."""
+class TestBooleanPredicates:
+    """Boolean predicate methods should return expressions directly."""
 
     def _has_if_return_true_return_false(self, func_node):
-        """Check if a function has the pattern: if X: return True; return False."""
         body = func_node.body
         for i, stmt in enumerate(body):
             if isinstance(stmt, ast.If):
@@ -186,7 +141,6 @@ class TestSimplifyBooleansM1:
                     and isinstance(if_body[0].value, ast.Constant)
                     and if_body[0].value.value is True
                 ):
-                    # Check if next statement is return False
                     if i + 1 < len(body):
                         next_stmt = body[i + 1]
                         if (
@@ -218,13 +172,10 @@ class TestSimplifyBooleansM1:
                 )
 
 
-# --- L1: Duplicate pathlib import ---
+class TestImportHygiene:
+    """No duplicate or unnecessary imports."""
 
-
-class TestDuplicateImportL1:
-    """json_parser.py should not have both 'import pathlib' and 'from pathlib import Path'."""
-
-    def test_no_bare_import_pathlib(self):
+    def test_json_parser_has_no_bare_pathlib_import(self):
         source = (PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py").read_text()
         tree = ast.parse(source)
 
@@ -237,10 +188,7 @@ class TestDuplicateImportL1:
                         )
 
 
-# --- H1: Missing __init__.py files ---
-
-
-class TestInitFilesH1:
+class TestPackageStructure:
     """All grunz packages must have __init__.py files."""
 
     @pytest.mark.parametrize(
