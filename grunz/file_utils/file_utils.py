@@ -73,4 +73,4 @@ class FileUtils:
         :param _list: List with duplicates.
         :return: List without duplicates.
         """
-        return list(set(_list))
+        return list(dict.fromkeys(_list))

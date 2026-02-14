@@ -13,7 +13,6 @@ class Splitter:
     def __init__(self, file_path):
 
         self.file_path = file_path
-        self.file_utils = FileUtils(self.file_path)
 
     def export_frames_to_jpeg(self, fps_value: float) -> None:
         """
@@ -24,7 +23,7 @@ class Splitter:
         clip = VideoFileClip(self.file_path)
 
         export_parent_path = f"{Path(self.file_path).parent}"
-        jpeg_filename = self.file_utils.convert_path_name(self.file_path)
+        jpeg_filename = FileUtils.convert_path_name(self.file_path)
         return clip.write_images_sequence(
             f"{export_parent_path}/{jpeg_filename}-%03d.jpeg", fps=fps_value
         )
