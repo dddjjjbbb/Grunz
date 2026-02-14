@@ -43,7 +43,8 @@ def pre_pro(root_video_directory: str) -> str:
 
     detector = create_detector()
     jpeg_file_paths = file_utils.find_files_recursively("jpeg")
-    output_json = file_utils.create_json_output_file()
+    output_dir = Path(root_video_directory).parent / "output"
+    output_json = file_utils.create_json_output_file(output_dir)
 
     results = []
     for image_path in jpeg_file_paths:
@@ -56,18 +57,24 @@ def pre_pro(root_video_directory: str) -> str:
     return output_json
 
 
-def post_pro(mega_detector_json) -> None:
+def post_pro(mega_detector_json, output_dir: Path = None) -> None:
     """
     This is the procedural glue for post pro. It includes:
         - Parsing MegaDetector JSON to ascertain positive results.
         - Finding the AVI from which the JPEG derives.
         - Sorting positive results from negative.
+    :param mega_detector_json: Path to the MegaDetector JSON output file.
+    :param output_dir: Base directory for positive detection output.
+        Defaults to the parent directory of the JSON file.
     :return: None.
     """
-    positive_detection_path = "grunz/output/positive_detection/"
+    if output_dir is None:
+        output_dir = Path(mega_detector_json).parent
 
-    file_utils = FileUtils(Path("grunz/data/output"))
-    file_utils.create_directory(Path("grunz/output/positive_detection"))
+    positive_detection_path = Path(output_dir) / "positive_detection"
+
+    file_utils = FileUtils(positive_detection_path)
+    file_utils.create_directory(positive_detection_path)
 
     json_parser = JSONParser(mega_detector_json)
 
@@ -80,13 +87,14 @@ def post_pro(mega_detector_json) -> None:
 
     for f in avi_paths_set:
         file_name = Path(f.name)
-        original_path_to_file = Path("/".join(Path(f).parts[1:-1]))
-        file_utils.create_directory(
-            Path(f"{positive_detection_path}/{original_path_to_file}")
-        )
-        file_utils.copy_file(
-            f, f"{positive_detection_path}/{original_path_to_file}/{file_name}"
-        )
+        parts = Path(f).parts[1:-1]
+        if parts:
+            original_path_to_file = Path(*parts)
+        else:
+            original_path_to_file = Path(".")
+        dest_dir = positive_detection_path / original_path_to_file
+        file_utils.create_directory(dest_dir)
+        file_utils.copy_file(f, str(dest_dir / file_name))
 
 
 def main():
