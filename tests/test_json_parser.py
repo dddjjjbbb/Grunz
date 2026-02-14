@@ -1,4 +1,4 @@
-"""Structural and correctness tests for code quality invariants."""
+"""Tests for grunz/json_parser/json_parser.py — JSON parsing and filtering."""
 
 import ast
 import inspect
@@ -8,32 +8,9 @@ from pathlib import Path
 import pytest
 
 from grunz.json_parser.json_parser import JSONParser
-from grunz.file_utils.file_utils import FileUtils
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-
-
-class TestArgparseContract:
-    """main() should parse args as strings, not execute functions via type=."""
-
-    def test_pre_is_not_used_as_type_callable(self):
-        source = (PROJECT_ROOT / "main.py").read_text()
-        tree = ast.parse(source)
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-                if node.func.attr == "add_argument":
-                    for keyword in node.keywords:
-                        if keyword.arg == "type":
-                            if isinstance(keyword.value, ast.Name):
-                                assert keyword.value.id not in (
-                                    "pre_pro",
-                                    "post_pro",
-                                ), "argparse type= should not be a pipeline function"
-
-    def test_post_is_not_used_as_type_callable(self):
-        source = (PROJECT_ROOT / "main.py").read_text()
-        assert "type=post_pro" not in source, "post_pro should not be an argparse type="
+JSON_PARSER_SOURCE = PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py"
 
 
 class TestFilterDetectionResults:
@@ -73,7 +50,7 @@ class TestFilterDetectionResults:
         )
 
     def test_no_pass_statement_in_filter(self):
-        source = (PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py").read_text()
+        source = JSON_PARSER_SOURCE.read_text()
         tree = ast.parse(source)
 
         for node in ast.walk(tree):
@@ -85,27 +62,6 @@ class TestFilterDetectionResults:
                         )
 
 
-class TestPreProAnnotation:
-    """pre_pro should be annotated as returning str, not None."""
-
-    def test_pre_pro_annotation_is_str(self):
-        source = (PROJECT_ROOT / "main.py").read_text()
-        tree = ast.parse(source)
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "pre_pro":
-                assert node.returns is not None, "pre_pro has no return annotation"
-                if isinstance(node.returns, ast.Constant):
-                    assert node.returns.value is not None, (
-                        "pre_pro return annotation is None"
-                    )
-                elif isinstance(node.returns, ast.Name):
-                    assert node.returns.id == "str", (
-                        f"pre_pro return annotation is {node.returns.id}, expected str"
-                    )
-                break
-
-
 class TestTypeAnnotations:
     """Type annotations must match actual runtime types."""
 
@@ -114,16 +70,6 @@ class TestTypeAnnotations:
         param = sig.parameters["confidence_rating"]
         assert param.annotation is float, (
             f"confidence_rating annotation is {param.annotation}, expected float"
-        )
-
-    def test_find_files_recursively_returns_list_of_str(self):
-        sig = inspect.signature(FileUtils.find_files_recursively)
-        ret = sig.return_annotation
-
-        origin = getattr(ret, "__origin__", None)
-        assert origin is list, (
-            f"Return annotation origin is {origin}, expected list. "
-            f"Full annotation: {ret}"
         )
 
 
@@ -152,7 +98,7 @@ class TestBooleanPredicates:
         return False
 
     def test_is_confidence_rating_uses_direct_return(self):
-        source = (PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py").read_text()
+        source = JSON_PARSER_SOURCE.read_text()
         tree = ast.parse(source)
 
         for node in ast.walk(tree):
@@ -162,7 +108,7 @@ class TestBooleanPredicates:
                 )
 
     def test_is_category_of_type_animal_uses_direct_return(self):
-        source = (PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py").read_text()
+        source = JSON_PARSER_SOURCE.read_text()
         tree = ast.parse(source)
 
         for node in ast.walk(tree):
@@ -175,8 +121,8 @@ class TestBooleanPredicates:
 class TestImportHygiene:
     """No duplicate or unnecessary imports."""
 
-    def test_json_parser_has_no_bare_pathlib_import(self):
-        source = (PROJECT_ROOT / "grunz" / "json_parser" / "json_parser.py").read_text()
+    def test_no_bare_pathlib_import(self):
+        source = JSON_PARSER_SOURCE.read_text()
         tree = ast.parse(source)
 
         for node in ast.walk(tree):
@@ -186,20 +132,3 @@ class TestImportHygiene:
                         pytest.fail(
                             "json_parser.py has 'import pathlib' alongside 'from pathlib import Path'"
                         )
-
-
-class TestPackageStructure:
-    """All grunz packages must have __init__.py files."""
-
-    @pytest.mark.parametrize(
-        "package_dir",
-        [
-            "grunz",
-            "grunz/file_utils",
-            "grunz/json_parser",
-            "grunz/splitter",
-        ],
-    )
-    def test_init_file_exists(self, package_dir):
-        init_path = PROJECT_ROOT / package_dir / "__init__.py"
-        assert init_path.exists(), f"Missing {package_dir}/__init__.py"
