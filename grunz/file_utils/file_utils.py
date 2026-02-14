@@ -13,7 +13,7 @@ class FileUtils:
 
         self.directory = directory
 
-    def find_files_recursively(self, extension: str) -> [str]:
+    def find_files_recursively(self, extension: str) -> list[str]:
         """
         :param extension: A file extension. This is case dependent.
         :return: A sorted list of file paths matching the extension argument.

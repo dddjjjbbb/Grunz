@@ -142,3 +142,4 @@ grunz/data/dummy/*
 .idea/
 *.pb
 tests/sample_image.jpg
+CODE_REVIEW.md

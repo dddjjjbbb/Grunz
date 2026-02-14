@@ -1,7 +1,6 @@
 """This module handles parsing the JSON output file after camera traps have been processed."""
 
 import json
-import pathlib
 import re
 from enum import Enum
 from pathlib import Path
@@ -28,7 +27,6 @@ class JSONParser:
     def __init__(self, path_to_json):
 
         self.path_to_json = path_to_json
-        self.animals = []
 
     def read(self) -> Dict:
         """
@@ -38,14 +36,12 @@ class JSONParser:
             return json.load(source)
 
     @staticmethod
-    def is_confidence_rating_minimum_or_above(confidence_rating: int) -> bool:
+    def is_confidence_rating_minimum_or_above(confidence_rating: float) -> bool:
         """
         :param confidence_rating: 85% is the default.
         :return: A bool representing if the confidence value of a detection is >= percentage.
         """
-        if confidence_rating >= ConfidenceRating.MINIMUM.value:
-            return True
-        return False
+        return confidence_rating >= ConfidenceRating.MINIMUM.value
 
     @staticmethod
     def is_category_of_type_animal(category: str) -> bool:
@@ -55,32 +51,28 @@ class JSONParser:
         each category is a string in the JSON itself. This is why we cast before comparison.
         :return: A bool representing if the category, i.e the image is of type "Animal".
         """
-        if int(category) == Categories.ANIMAL.value:
-            return True
-        return False
+        return int(category) == Categories.ANIMAL.value
 
-    def filter_json_for_detection_results(self) -> [[Dict], [Dict]]:
+    def filter_json_for_detection_results(self) -> List[Dict]:
         """
         :return: A list of detection results.
         """
+        animals = []
         mega_detector_json = JSONParser.read(self)
         images = mega_detector_json["images"]
 
         for image in images:
             detections = image["detections"]
 
-            if not detections:
-                pass
-
-            else:
+            if detections:
                 max_detection_conf = image["max_detection_conf"]
                 category = image["detections"][0]["category"]
 
                 if JSONParser.is_confidence_rating_minimum_or_above(
                     max_detection_conf
                 ) and JSONParser.is_category_of_type_animal(category):
-                    self.animals.append(image)
-        return self.animals
+                    animals.append(image)
+        return animals
 
     @staticmethod
     def get_file_paths_for_sort(list_of_detection_dicts: [Dict]) -> List:
@@ -97,7 +89,7 @@ class JSONParser:
         :param jpeg_path: Path to positive jpeg.
         :return: The path to the video from which the jpeg derives.
         """
-        original_dir = f"{pathlib.Path(jpeg_path).parent}"
+        original_dir = f"{Path(jpeg_path).parent}"
         jpeg_path = jpeg_path.split("/")[-1]
         avi_path = re.search(r"PICT\d*\.AVI", jpeg_path).group(0)
         return Path(f"{original_dir}/{avi_path}")

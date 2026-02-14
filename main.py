@@ -17,7 +17,7 @@ class OneMinuteVideo(Enum):
     FIVE_IMAGES = 0.4
 
 
-def pre_pro(root_video_directory: str) -> None:
+def pre_pro(root_video_directory: str) -> str:
     """
     This is the procedural glue for pre pro. It includes:
         - Recursively returning AVI files.
@@ -96,18 +96,21 @@ def main():
     parser.add_argument(
         "--pre",
         help="Run pre pro steps. Switch expects the root path containing AVI files.",
-        type=pre_pro,
-        action="store",
+        type=str,
     )
 
     parser.add_argument(
         "--post",
         help="Run post pro steps. Switch expects path to MegaDetector JSON.",
-        type=post_pro,
-        action="store",
+        type=str,
     )
 
-    parser.parse_args()
+    args = parser.parse_args()
+
+    if args.pre:
+        pre_pro(args.pre)
+    if args.post:
+        post_pro(args.post)
 
 
 if __name__ == "__main__":
