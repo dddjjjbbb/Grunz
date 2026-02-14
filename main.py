@@ -78,10 +78,10 @@ def post_pro(mega_detector_json, output_dir: Path = None) -> None:
     json_parser = JSONParser(mega_detector_json)
 
     positive_detection_results = json_parser.filter_json_for_detection_results()
-    positive_jpeg_file_paths = json_parser.get_file_paths_for_sort(
+    positive_jpeg_file_paths = json_parser.extract_file_paths(
         positive_detection_results
     )
-    positive_avi_paths = json_parser.get_list_for_sort(positive_jpeg_file_paths)
+    positive_avi_paths = json_parser.convert_jpeg_paths_to_avi_paths(positive_jpeg_file_paths)
     avi_paths_set = file_utils.remove_duplicates_from_list(positive_avi_paths)
 
     for f in avi_paths_set:

@@ -75,17 +75,16 @@ class JSONParser:
         return animals
 
     @staticmethod
-    def get_file_paths_for_sort(list_of_detection_dicts: [Dict]) -> List:
+    def extract_file_paths(detection_results: List[Dict]) -> List[str]:
         """
-        :param list_of_detection_dicts: A list of dicts, i.e image objects containing animals..
+        :param detection_results: A list of dicts, i.e image objects containing animals.
         :return: A list of file paths for each positive result.
         """
-        return [d["file"] for d in list_of_detection_dicts]
+        return [d["file"] for d in detection_results]
 
     @staticmethod
-    def __convert_jpeg_path_to_original_avi(jpeg_path: str) -> str:
+    def __convert_jpeg_path_to_original_avi(jpeg_path: str) -> Path:
         """
-        A helper method to be used in `get_list_for_sort`.
         :param jpeg_path: Path to positive jpeg.
         :return: The path to the video from which the jpeg derives.
         """
@@ -100,9 +99,9 @@ class JSONParser:
         return Path(f"{original_dir}/{match.group(0)}")
 
     @staticmethod
-    def get_list_for_sort(jpeg_paths: List) -> List:
+    def convert_jpeg_paths_to_avi_paths(jpeg_paths: List[str]) -> List[Path]:
         """
-        :param jpeg_paths: A list of positive jpeg detention results.
-        :return: A list of paths which correspond to the avi file the jpeg was taken from.
+        :param jpeg_paths: A list of positive jpeg detection result paths.
+        :return: A list of paths which correspond to the AVI file each jpeg was taken from.
         """
         return [JSONParser.__convert_jpeg_path_to_original_avi(p) for p in jpeg_paths]
