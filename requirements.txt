@@ -1,15 +1,15 @@
 # Core
-PytorchWildlife
-moviepy
-numpy
+PytorchWildlife~=1.2.4
+moviepy~=2.2
+numpy~=2.4
 Pillow>=12.1.1
-matplotlib
-pandas
-requests
-tqdm
+matplotlib~=3.10
+pandas~=3.0
+requests~=2.32
+tqdm~=4.67
 
 # Dev
-pytest
-pytest-cov
-black
-pylint
+pytest~=9.0
+pytest-cov~=7.0
+black~=26.1
+pylint~=4.0

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 
 from grunz.file_utils.file_utils import FileUtils
 

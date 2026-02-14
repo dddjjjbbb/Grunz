@@ -56,12 +56,14 @@ class FileUtils:
         return copy2(source_path, destination_path)
 
     @staticmethod
-    def create_json_output_file() -> str:
-        """Create json output file if it does not exist, otherwise do nothing.
-        :return:
+    def create_json_output_file(output_dir: Path) -> str:
+        """Create a timestamped JSON output file in the given directory.
+        :param output_dir: Directory to create the file in.
+        :return: Path to the created file as a string.
         """
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
         time_stamp = time.strftime("%Y%m%d-%H%M")
-        filename = Path(f"grunz/output/{time_stamp}.json")
+        filename = Path(output_dir) / f"{time_stamp}.json"
         filename.touch(exist_ok=True)
         return str(filename)
 

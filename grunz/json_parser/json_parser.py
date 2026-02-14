@@ -90,9 +90,14 @@ class JSONParser:
         :return: The path to the video from which the jpeg derives.
         """
         original_dir = f"{Path(jpeg_path).parent}"
-        jpeg_path = jpeg_path.split("/")[-1]
-        avi_path = re.search(r"PICT\d*\.AVI", jpeg_path).group(0)
-        return Path(f"{original_dir}/{avi_path}")
+        filename = jpeg_path.split("/")[-1]
+        match = re.search(r"PICT\d*\.AVI", filename)
+        if match is None:
+            raise ValueError(
+                f"Cannot extract AVI filename from '{jpeg_path}': "
+                f"expected pattern PICT<digits>.AVI"
+            )
+        return Path(f"{original_dir}/{match.group(0)}")
 
     @staticmethod
     def get_list_for_sort(jpeg_paths: List) -> List:
