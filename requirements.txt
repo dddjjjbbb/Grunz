@@ -2,7 +2,6 @@
 PytorchWildlife~=1.2.4
 moviepy~=2.2
 numpy~=2.4
-Pillow>=12.1.1
 matplotlib~=3.10
 pandas~=3.0
 requests~=2.32
