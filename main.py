@@ -3,6 +3,7 @@ MegaDetector pipeline."""
 
 import argparse
 import json
+import logging
 from enum import Enum
 from pathlib import Path
 
@@ -10,6 +11,9 @@ from grunz.detector import convert_result, create_detector
 from grunz.file_utils.file_utils import FileUtils
 from grunz.json_parser.json_parser import JSONParser
 from grunz.splitter.splitter import Splitter
+
+
+logger = logging.getLogger(__name__)
 
 
 class OneMinuteVideo(Enum):
@@ -36,8 +40,8 @@ def pre_pro(root_video_directory: str) -> str:
             Splitter(str(avi_file_path)).export_frames_to_jpeg(
                 OneMinuteVideo.FIVE_IMAGES.value
             )
-        except IOError as e:
-            print(f"{avi_file_path} could not be read. See: {e}")
+        except IOError:
+            logger.error("%s could not be read", avi_file_path, exc_info=True)
             continue
 
     detector = create_detector()
@@ -96,6 +100,19 @@ def post_pro(mega_detector_json, output_dir: Path = None) -> None:
         file_utils.copy_file(f, str(dest_dir / file_name))
 
 
+def _configure_logging(log_dir: Path) -> None:
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_file = log_dir / "grunz.log"
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(log_file),
+        ],
+    )
+
+
 def main():
 
     parser = argparse.ArgumentParser()
@@ -113,6 +130,9 @@ def main():
     )
 
     args = parser.parse_args()
+
+    log_dir = Path(args.pre or args.post or ".").parent / "logs"
+    _configure_logging(log_dir)
 
     if args.pre:
         pre_pro(args.pre)
